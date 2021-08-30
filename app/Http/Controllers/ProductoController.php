@@ -101,7 +101,7 @@ class ProductoController extends Controller
                 return Redirect::to('productos/nuevo/')->with($notification);
         }else
 
-           $iva = TasaIva::find(3);
+            $iva = TasaIva::find(3);
             //Acá se hace el alta
             $producto = new Producto();
             $producto->codigo  = $request->codigo;
@@ -109,9 +109,10 @@ class ProductoController extends Controller
             $producto->codigo_de_barras  = $request->codigo_de_barras;
             $producto->nombre  = $request->nombre;
             $producto->descripcion  = nl2br($request->descripcion);
-            //$producto->precio_compra  = $request->precio_compra;
+            $producto->fecha_fabricacion  = $request->fecha_fabricacion;
+            $producto->fecha_vencimiento  = $request->fecha_vencimiento;
             $producto->sucursal_id  = $request->sucursal_id;
-
+            $producto->tasa_iva_id  = $request->tasa_iva_id;
             
 
             if ($request->producto_garantia) {
@@ -140,11 +141,13 @@ class ProductoController extends Controller
                 $producto->stock  = 0;
             }
             
+            
+
+            
             $producto->save();
 
             if ($producto != null) {
             $gananciaPorCompraVenta =  ($producto->precio -  $producto->precio_compra);
-            
             $gananciaporproducto    = $gananciaPorCompraVenta * $request->stock;
 
             $ganancia = new Ganancia();
@@ -208,7 +211,7 @@ class ProductoController extends Controller
             $producto->codigo_de_barras     = $request->codigo_de_barras;
             $producto->descripcion          = nl2br($request->descripcion);
             $producto->familiaproducto_id   = $request->familia_producto;
-             $producto->tasa_iva_id  = 1;;
+            $producto->tasa_iva_id  = $request->tasa_iva_id;
 
             $producto->sucursal_id  = $request->sucursal_id;
             $producto->stock                = $request->stock;

@@ -29,7 +29,7 @@
 					</ul><br> 
 				
 					<div class="row">
-						{!! Form::model(['url' => ['productos/guardar'],'method' => 'POST']) !!}
+						{!! Form::model(['url' => ['productos/guardar'],'method' => 'POST','enctype'=>'multipart/form-data']) !!}
 						<div class="col-sm-12">
 							<div class="row">
 								<div class="col-sm-4">
@@ -43,6 +43,15 @@
 										<label for="txtNombre" class="control-label  ">Nombre</label>
 										<input id="txtNombre" type="text" class="form-control" name="nombre" placeholder="Nombre de producto" oninvalid="this.setCustomValidity('Debe ingresar un nombre de producto')"  required oninput="setCustomValidity('')">
 									</div>
+								</div>
+								<div class="col-sm-4">
+									<div class="form-group">
+										@php
+										$tipos = App\Models\TipoProducto::pluck('nombre','id')
+										@endphp
+			           <label class="mt-1">Tipo de producto</label>
+                  {!! Form::select('sucursal_id', $tipos, null,array('class' => 'form-control input-sm','placeholder'=>'Selecione la clase de producto','id'=>'sucursal_id')) !!} 
+                  </div>
 								</div>
 								<div class="col-sm-4">
 									<div class="form-group">
@@ -84,6 +93,12 @@
 									</div>
 								</div>
 								<div class="col-sm-4">
+										<div class="form-group">
+										<label >Imágen del producto</label>
+										<input class="form-control input-sm" type="file" name="photo" placeholder="Precio de compra">
+									</div>
+								</div>
+								<div class="col-sm-4">
 										<div class="form-group  ">
 										<label >Precio de compra</label>
 										<input class="form-control input-sm" type="text" name="precio_compra" placeholder="Precio de compra">
@@ -92,7 +107,7 @@
 								<div class="col-sm-4">
 										<div class="form-group">
 										<label for="txtPrecio" class="control-label  ">Precio de venta</label>
-										<input id="txtPrecio" class="form-control" name="precio" placeholder="Precio de venta en {{App\Models\Moneda::find(2)->simbolo }}">
+										<input id="txtPrecio" class="form-control" name="precio" placeholder="Precio de venta en {{App\Models\Moneda::find(1)->simbolo }}">
 									</div>
 								</div>
 								<div class="col-sm-4">
@@ -135,13 +150,26 @@
 										<input id="txtCodigo" type="date" class="form-control" name="fecha_vencimiento" placeholder="Código de producto"  value="{!! old('codigo') !!}" oninvalid="this.setCustomValidity('Debe ingresar un código para registrar el producto')" required oninput="setCustomValidity('')">
 									</div>	
 								</div>
-								<div class="col-sm-6">
+								<div class="col-sm-4">
 										<div class="form-group" style="">
 										<label for="txtDescripcion" class="control-label  ">N° de lote</label>
 										<input id="txtCodigo" type="text" class="form-control" name="lote" placeholder="Código de producto"  value="{!! old('codigo') !!}" oninvalid="this.setCustomValidity('Debe ingresar un código para registrar el producto')" required oninput="setCustomValidity('')">
 									</div>	
 								</div>
-
+									<div class="col-sm-6">
+										<div class="form-group" style="">
+										@php
+										$tipos = App\Models\TasaIva::get()
+										@endphp
+			           <label class="mt-1">Impuesto del producto</label>
+                 <select id="selectFamiliaProducto" class="form-control " name="familia_producto" required="true">
+												<option value="" disabled selected hidden>Tasa de impuestos</option>
+												@foreach( $tipos as $f)
+													<option value="{{ $f->id}}">{{ $f->nombre }} ({{ $f->tasa }}%)</option>
+												@endforeach
+											</select>
+									</div>	
+								</div>
 								<div class="col-sm-6">
 										<div class="form-group" style="">
 										<label for="txtDescripcion" class="control-label  ">Descripción</label>

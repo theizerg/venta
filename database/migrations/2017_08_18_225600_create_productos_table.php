@@ -25,6 +25,9 @@ class CreateProductosTable extends Migration
             $table->integer('familiaproducto_id')->nullable()->default(1);
             $table->foreign('familiaproducto_id')->references('id')->on('familia_productos');
 
+            $table->integer('tipo_producto_id')->nullable()->default(1);
+            $table->foreign('tipo_producto_id')->references('id')->on('tipo_productos');
+
             // Tasa de IVA
             $table->integer('tasa_iva_id')->nullable()->default(1);
             $table->foreign('tasa_iva_id')->references('id')->on('tasas_iva');
@@ -40,6 +43,9 @@ class CreateProductosTable extends Migration
             $table->foreign('sucursal_id')->references('id')->on('sucursales');
             $table->integer('producto_garantia')->default(0);
             $table->string('producto_tiempo_garantia')->default('3 meses');
+            $table->string('photo')->nullable();
+            $table->string('fecha_fabricacion')->nullable();
+            $table->string('fecha_vencimiento')->nullable();
 
             $table->softDeletes();
             $table->timestamps();

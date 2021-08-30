@@ -111,7 +111,50 @@ class AdminTableSeeder extends Seeder
 		\DB::table('tipo_comprobantes')->insert([
 			'nombre' => 'Factura de venta crédito',
 		]);
+
+		 /*Tipo de productos*/
+
+        \DB::table('tipo_productos')->insert([
+			'nombre' => 'KG',
+			'descripcion' => 'Kilogramos'
+		]);
+
+		\DB::table('tipo_productos')->insert([
+			'nombre' => 'ML',
+			'descripcion' => 'Miligramos'
+		]);
+
+		\DB::table('tipo_productos')->insert([
+			'nombre' => 'G',
+			'descripcion' => 'Gramos'
+		]);
+
+		\DB::table('tipo_productos')->insert([
+			'nombre' => 'UND',
+			'descripcion' => 'Unidad'
+		]);
+
+		\DB::table('tipo_productos')->insert([
+			'nombre' => 'CC',
+			'descripcion' => 'Centrímetros cúbicos'
+		]);
+
+		\DB::table('tipo_productos')->insert([
+			'nombre' => 'ML',
+			'descripcion' => 'Mililitros'
+		]);
+
+
+		\DB::table('tipo_productos')->insert([
+			'nombre' => 'CM',
+			'descripcion' => 'Centrímetros'
+		]);
 		
+
+		\DB::table('tipo_productos')->insert([
+			'nombre' => 'M',
+			'descripcion' => 'Metros'
+		]);
 		/*Sucursales*/
 
 		\DB::table('sucursales')->insert([

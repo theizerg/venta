@@ -61,7 +61,7 @@
           </div>
         </div>
       </div> 
-    @elseif(Auth::user()->hasRole('Gerente'))
+
     <div class="container">
        <div class="container-fluid">
            <div class="row">
@@ -238,7 +238,7 @@
             </div>
         </div>
     </div>
-@else
+
  <div class="row">
         <div class="col-sm-12">
             <div class="card card-statistics card-line-primary">
