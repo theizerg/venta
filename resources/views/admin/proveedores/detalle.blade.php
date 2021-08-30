@@ -62,7 +62,7 @@
 										</tr>
 										<tr>
 											<td>
-												RIF
+												RUC
 											</td>
 											<td>												
 												{{$proveedor->rut}}
@@ -180,7 +180,7 @@
 									</tr>
 									<tr>
 										<th>
-											RIF
+											RUC
 										</th>
 										<td>
 											<input class="form-control input-sm" type="text" name="rif" value="{{$proveedor->rut}}">

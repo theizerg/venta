@@ -76,8 +76,8 @@
 										<input class="form-control form-empresa-required" type="text" name="razonSocial" placeholder="Razón social" oninvalid="this.setCustomValidity('Debe ingresar una razón social para el cliente')" oninput="setCustomValidity('')">
 									</div>
 									<div class="form-group form-empresa">
-										<label class="sr-only">RIF</label>
-										<input class="form-control form-empresa-required" type="text" name="rut" placeholder="RIF" oninvalid="this.setCustomValidity('Debe ingresar un RIF para el cliente')" oninput="setCustomValidity('')">
+										<label class="sr-only">RUC</label>
+										<input class="form-control form-empresa-required" type="text" name="rut" placeholder="RUC" oninvalid="this.setCustomValidity('Debe ingresar un RUC para el cliente')" oninput="setCustomValidity('')">
 									</div>
 									<input type="hidden" name="usuario_id" id="usuario_id" value="{{Auth::user()->id}}">
 

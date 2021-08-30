@@ -40,7 +40,7 @@
 		<div class="col-md-12">
 			<div class="card card-line-primary">
 				<div class="card-header">
-				<h4>Ingreso de venta</h4> 
+				<h4>Ingreso de compra</h4> 
 				
 				</div>                
 				<div class="card-body">
@@ -51,12 +51,12 @@
 							</a>
 						</li>
 						<li class="list-inline-item">
-							<a href="/comprobantes" class="link_ruta">
-								Listado de ventas &nbsp; &nbsp;<i class="fa fa-chevron-right" aria-hidden="true"></i>
+							<a href="/compras" class="link_ruta">
+								Listado de compras &nbsp; &nbsp;<i class="fa fa-chevron-right" aria-hidden="true"></i>
 							</a>
 						</li>
 						<li class="list-inline-item">
-							<a href="/comprobantes/nuevo" class="link_ruta">
+							<a href="/compras/nuevo" class="link_ruta">
 								Nuevo
 							</a>
 						</li>						
@@ -111,10 +111,6 @@
 										<input name="serie" type="text" class="form-control input-sm" id="txtSerieComprobante" placeholder="Serie" tabindex="2" value="01">
 									</div>
 									<div class="form-group col-md-4 form_venta_contado form_factura_credito form_devolucion_contado">
-										<label  for="txtSerieComprobante">Cotización</label>
-										<input name="cotizacion" type="text" class="form-control input-sm" id="txtSerieComprobante" placeholder="Cotización del dólar">
-									</div>
-									<div class="form-group col-md-4 form_venta_contado form_factura_credito form_devolucion_contado">
 										<label  for="txtNumeroComprobante">Número de factura</label>
 										<input name="numero" type="text" class="form-control input-sm" id="txtNumeroComprobante" placeholder="N° de Comprobante" tabindex="3">
 									</div>
@@ -167,8 +163,8 @@
 										<input name="direccion" type="text" class="form-control input-sm" id="txtDireccion" placeholder="Dirección" tabindex="7">
 									</div>
 									<div class="form-group col-md-4 form_venta_contado  form_venta_cliente form_factura_credito form_devolucion_contado form_compra_contado">
-										<label  for="txtRif">RIF</label>
-										<input name="rif" type="text" class="form-control input-sm" id="txtRif" placeholder="RIF" tabindex="8">
+										<label  for="txtRif">RUC</label>
+										<input name="rif" type="text" class="form-control input-sm" id="txtRif" placeholder="RUC" tabindex="8">
 									</div>
 									</div>
 
@@ -318,7 +314,7 @@
 								<tr>
 									<th width="5%">ID</th>
 									<th width="20%">Nombre / Razón Social</th>
-									<th width="20%">RIF</th>
+									<th width="20%">RUC</th>
 									<th width="20%">Mail</th>
 									<th width="20%">Dirección</th>
 									<th width="5%"></th>

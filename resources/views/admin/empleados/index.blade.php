@@ -39,7 +39,7 @@
                                 <th class="text-center">ID</th> 
                                 <th class="text-center">Nombres</th>
                                 <th class="text-center">Apellidos</th>
-                                <th  class="text-center">Cédula</th>
+                                <th  class="text-center">RUC</th>
                                 <th class="text-center">Teléfono</th>
                                 <th  class="text-center">Profesión</th>
                                 <th  class="text-center">Fecha de ingreso</th>

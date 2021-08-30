@@ -112,7 +112,7 @@
 										@if($cliente->empresa)
 											<tr>
 												<td>
-													RIF
+													RUC
 												</td>
 												<td>
 													{{$cliente->rut}}
@@ -238,7 +238,7 @@
 									@if($cliente->empresa)
 									<tr>
 										<th>
-											RIF
+											RUC
 										</th>
 										<td>
 											<input class="form-control input-sm" type="text" name="rif" value="{{$cliente->rif}}">

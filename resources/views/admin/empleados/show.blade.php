@@ -57,7 +57,7 @@
 										</tr>
 										<tr>
 										<td>
-											Cédula
+											RUC
 										</td>
 										<td>
 											{{$empleado->nu_cedula}} 
@@ -201,7 +201,7 @@
 									</tr>
 									<tr>
 										<th>
-											Cédula
+											RUC
 										</th>
 										<td>
 											<input class="form-control input-sm" type="text" name="nu_cedula" value="{{$empleado->nu_cedula}}">

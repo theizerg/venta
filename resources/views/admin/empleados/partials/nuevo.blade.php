@@ -12,8 +12,8 @@
 		</div>
 
 		<div class="form-group">
-			<label class="mt-1">Cédula</label>
-			{!! Form::text('nu_cedula', null,array('class' => 'form-control input-sm','placeholder'=>'Cédula del empleado ','id'=>'nu_cedula')) !!}
+			<label class="mt-1">ruc</label>
+			{!! Form::text('nu_cedula', null,array('class' => 'form-control input-sm','placeholder'=>'ruc del empleado ','id'=>'nu_cedula')) !!}
 		
 		</div>
 		<div class="form-group">

@@ -46,9 +46,9 @@
 
 									<div class="form-group">
 										<label for="txtRif" class="control-label sr-only">
-											RIF
+											RUC
 										</label>
-										<input id="txtRif" type="text" class="form-control" name="rif" placeholder="RIF"  value="{!! old('rif') !!}" >
+										<input id="txtRif" type="text" class="form-control" name="rif" placeholder="RUC"  value="{!! old('rif') !!}" >
 									</div>
 
 									<div class="form-group">
