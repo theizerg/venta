@@ -29,7 +29,8 @@
 					</ul><br> 
 				
 					<div class="row">
-						{!! Form::model(['url' => ['productos/guardar'],'method' => 'POST','enctype'=>'multipart/form-data']) !!}
+					<form role="form" action="{{ url('productos/nuevo') }}" method="POST" enctype="multipart/form-data" >
+						@csrf
 						<div class="col-sm-12">
 							<div class="row">
 								<div class="col-sm-4">
@@ -162,7 +163,7 @@
 										$tipos = App\Models\TasaIva::get()
 										@endphp
 			           <label class="mt-1">Impuesto del producto</label>
-                 <select id="selectFamiliaProducto" class="form-control " name="familia_producto" required="true">
+                 <select id="selectFamiliaProducto" class="form-control " name="tasa_iva_id" required="true">
 												<option value="" disabled selected hidden>Tasa de impuestos</option>
 												@foreach( $tipos as $f)
 													<option value="{{ $f->id}}">{{ $f->nombre }} ({{ $f->tasa }}%)</option>
@@ -202,7 +203,7 @@
               </thead>
                 @foreach ($productos as $p)
                 <tr>
-                  <td>{{$p->id}} </td>
+                  <td><img height="100" src="{{ url('images/productos',$p->photo) }}"> </td>
                   <td><a href="/productos/detalle/{{ $p->codigo}}">{{ $p->codigo}}</a></td>
                   <td>
                   	@if(strlen($p->nombre) > 24)

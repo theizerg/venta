@@ -14,6 +14,7 @@ use App\Models\User;
 use App\Models\Ganancia;
 use App\Models\Sucursales;
 use DB;
+use Illuminate\Support\Str;
 
 class ProductoController extends Controller
 {
@@ -101,7 +102,6 @@ class ProductoController extends Controller
                 return Redirect::to('productos/nuevo/')->with($notification);
         }else
 
-            $iva = TasaIva::find(3);
             //Acá se hace el alta
             $producto = new Producto();
             $producto->codigo  = $request->codigo;
@@ -114,6 +114,15 @@ class ProductoController extends Controller
             $producto->sucursal_id  = $request->sucursal_id;
             $producto->tasa_iva_id  = $request->tasa_iva_id;
             
+            if($request->hasfile('photo')){
+            $imagen         = $request->file('photo');
+            $nombreimagen   = Str::slug($request->nombre).".".$imagen->guessExtension();
+            $ruta          = public_path("images/productos/");
+            $imagen->move($ruta,$nombreimagen);         
+            $producto->photo  = $nombreimagen; // asignar el nombre para guardar
+
+            }
+
 
             if ($request->producto_garantia) {
                 

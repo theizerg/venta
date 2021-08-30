@@ -186,7 +186,7 @@ class AdminTableSeeder extends Seeder
             'nombre' => 'Productos de almacén',
         ]);
 
-
+    /*
         \DB::table('productos')->insert([
 				'marca_producto' =>'obtener',
 				'codigo' => '295875726-9',
@@ -1453,7 +1453,7 @@ class AdminTableSeeder extends Seeder
 			'created_at' => date('d/m/Y H:i:m'),
 			'sucursal_id' => 1
 		]);
-
+*/
 
 		\DB::table('cargos')->insert([
              'nombre' => 'Vendedor',

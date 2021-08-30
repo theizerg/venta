@@ -81,6 +81,12 @@
 											</td>
 										</tr>
 										<tr>
+											<td>Impuesto</td>
+											<td> 
+												{{ $producto->iva->tasa }}%
+											</td>
+										</tr>
+										<tr>
 											<td>Descripción</td>
 											 													
 											<td title="{{$producto->descripcion}}">

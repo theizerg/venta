@@ -43,17 +43,17 @@
               </thead>
               @foreach ($productos as $p)
               <tr>
-                <td>{{$p->id}} </td>
+               <td><img height="100" src="{{ url('images/productos',$p->photo) }}"> </td>
                <td><a href="/productos/detalle/{{ $p->codigo}}">{{ $p->codigo}}</a></td>
                 <td>
                 {{ $p->nombre }}
                 </td>
                  <td>
                   @if(strlen($p->marca_producto) > 24)
-          {{ substr($p->marca_producto, 0, 24) . "..."}}
-        @else
-          {{ $p->marca_producto }}
-        @endif
+                    {{ substr($p->marca_producto, 0, 24) . "..."}}
+                  @else
+                    {{ $p->marca_producto }}
+                  @endif
                 </td>
 
                 <td class="text-center">{{ $p->familia->nombre}}</td>
