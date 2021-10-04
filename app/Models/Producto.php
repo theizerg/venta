@@ -19,7 +19,7 @@ class Producto extends Model
     //use Sortable;
 
     #Tabla asociada
-    protected $table = 'productos';
+    protected $table = 'producto';
 
     protected $fillable = [
         'codigo', 'codigo_de_barras','stock', 'nombre','descripcion', 'precio', 'tasa_iva_id'
@@ -34,6 +34,15 @@ class Producto extends Model
     public function LineasProducto(){
         return $this->hasMany(LineaProducto::class);
     }
+
+    public function imagenes(){
+        return $this->hasOne(ImagenProducto::class, 'producto_id');
+    }
+
+     public function precio(){
+        return $this->hasOne(PrecioProducto::class, 'producto_id');
+    }
+
 
     public function familia(){
         return $this->belongsTo(FamiliaProducto::class, 'familiaproducto_id');
@@ -79,11 +88,12 @@ class Producto extends Model
     }
 
     public function registrarCambioPrecio(){
+
         DB::table('producto_precio')->insert([
             'producto_id' => $this->id,
             'usuario_id' => Auth::user()->id,
             'fecha' => date("Y-m-d H:i:s"),
-            'precio' => $this->precio
+            'precio' => $this->precio_venta
         ]);
     }
 

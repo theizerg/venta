@@ -33,33 +33,58 @@
 					</ul><br>
 			
 					<div class="table-responsive">
-						<table id="example" cellspacing="0" width="100%" class="table table-hover display">
-							<thead>
-							<tr>
-								<th class="text-center">ID</th>	
-                                <th class="text-center">Efectivo</th>
-								<th class="text-center">Punto V.</th>
-								<th  class="text-center">Dólares</th>
-								<th class="text-center">Transferencia</th>
-                                <th  class="text-center">Pago móvil</th>
-                                <th  class="text-center">Estado</th>
-                                <th  class="text-center">N° Caja</th>
-							</tr>
+						<table class="table table-responsive-sm table-hover table-outline mb-0 table-sm">
+                        <thead class="thead-light">
+                            <tr>
+                                <th class="text-center">Identificador</th>
+                                <th class="text-center">Fecha</th>
+                                <th class="text-center">Hora de apertura</th>
+                                <th class="text-center">Hora de cierre</th>
+                                <th class="text-center">Monto de apertura</th>
+                                <th class="text-center">Monto de cierre</th>
+                                <th class="text-center">Estado</th>
+                                <th class="text-center">Caja</th>
+                                <th class="text-center">Opciones</th>
+                            </tr>         
 							</thead>
-							<tbody>
-							@foreach($aperturas as $apertura)
-							<tr class="text-center">
-                                <td>{{$apertura->id_apertura}}</td>		
-                                <td>{{$apertura->nu_cantidad_efectivo}}</td>
-                                <td>{{$apertura->nu_cantidad_punto_venta}}</td>
-                                <td>{{$apertura->nu_cantidad_dolares}}</td>
-                                <td>{{$apertura->nu_cantidad_transferencias}}</td>
-                                <td>{{$apertura->nu_cantidad_pago_movil}}</td>
-                                <td><span class="badge  {{ $apertura->status ? 'badge-success' : 'badge-danger' }}">{{ $apertura->display_status }}</span>	</td>			
-								<td>{{$apertura->caja_id}}</td>
-							</tr>
-							@endforeach
-							</tbody>
+							@if (count($cajas)>0)
+                                                @foreach ($cajas as $item)
+                                                    <tbody>
+                                                        <tr>
+                                                            <td class="text-center">{{strtoupper($item->codigo)}}</td>
+                                                            <td class="text-center">{{$item->fecha}}</td>
+                                                            <td class="text-center">{{$item->hora}}</td>
+                                                            <td class="text-center">
+                                                                @if (!$item->hora_cierre)
+                                                                <span class="badge badge-dark">Aun no cerrada</span>
+                                                                @else
+                                                                    {{$item->hora_cierre}}
+                                                                @endif        
+                                                            </td>
+                                                            <td class="text-center">${{$item->monto}} USD</td>
+                                                            <td class="text-center">
+                                                                @if ($item->monto_cierre == '0.00' || !$item->monto_cierre)
+                                                                    <span class="badge badge-dark">Aun no cerrada</span>
+                                                                @else
+                                                                {{$config->prefijo_moneda}}{{$item->monto_cierre}} {{$config->currency}}
+                                                                @endif
+                                                            </td>
+                                                            <td class="text-center">{{$item->estado}}</td>
+                                                            <td class="text-center">{{$item->caja}}</td>
+                                                            <td class="text-center">
+                                                               
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                @endforeach
+                                              @else
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="8" class="text-center">No se aperturó alguna caja este día.</td>
+                                            </tr>
+                                        </tbody>
+                                    @endif
+                                </table>
 						</table>
 					</div>
 				</div>

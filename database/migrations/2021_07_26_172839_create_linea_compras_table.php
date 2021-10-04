@@ -18,7 +18,7 @@ class CreateLineaComprasTable extends Migration
             $table->increments('id');
             // Producto asociado
             $table->integer('producto_id')->unsigned();
-            $table->foreign('producto_id')->references('id')->on('productos');
+            $table->foreign('producto_id')->references('id')->on('producto');
             // Usuario asociado
             $table->integer('usuario_id')->unsigned();
             $table->foreign('usuario_id')->references('id')->on('users');

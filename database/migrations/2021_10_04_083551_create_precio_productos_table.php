@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateGananciasTable extends Migration
+class CreatePrecioProductosTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,12 @@ class CreateGananciasTable extends Migration
      */
     public function up()
     {
-        Schema::create('ganancias', function (Blueprint $table) {
+        Schema::create('precio_productos', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('producto_id')->unsigned();
-            $table->foreign('producto_id')->references('id')->on('producto');
-            $table->string('cantidad');
-            $table->double('ganancia_por_producto');
-            $table->double('total');
+            $table->string('precio_compra');
+            $table->string('precio_venta');
+            $table->integer('idproducto')->unsigned();
+            $table->foreign('idproducto')->references('id')->on('producto');
             $table->timestamps();
         });
     }
@@ -31,6 +30,6 @@ class CreateGananciasTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('ganancias');
+        Schema::dropIfExists('precio_productos');
     }
 }

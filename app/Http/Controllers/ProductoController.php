@@ -13,7 +13,11 @@ use App\Models\TasaIva;
 use App\Models\User;
 use App\Models\Ganancia;
 use App\Models\Sucursales;
+use App\Models\PrecioProducto;
+use App\Models\ImagenProducto;
 use DB;
+use DateTime;
+use Session;
 use Illuminate\Support\Str;
 
 class ProductoController extends Controller
@@ -32,19 +36,20 @@ class ProductoController extends Controller
 
     public function index(Request $request)
     {
-        $busqueda = $request->get('busqueda');
-        $producto = Producto::BuscarPorCodigo($busqueda)->first();
-        if ($producto !=null) {
-            return Redirect::to('productos/' . $producto->busqueda);
-        }else{
-            $producto = Producto::BuscarPorCodigoDeBarras($busqueda)->first();
-            if ($producto !=null) {
-                return Redirect::to('productos/' . $producto->busqueda);
-            }else{
-                $productos = Producto::Filtrar($busqueda)->orderBy('nombre')->get();
-                return view('admin.productos.index')->with(compact('productos'));
-            }
-        }
+        
+         
+        
+        
+
+       
+        $productos= Producto::with('imagenes','precio')
+        ->get();
+
+        //dd($productos->imagenes->imagen);
+
+        
+
+        return view('admin.productos.index',compact('productos'));
     }
 
     public function buscar(Request $request){
@@ -63,21 +68,35 @@ class ProductoController extends Controller
 
     public function nuevo()
     {
-        $productos = Producto::get();
-        $sucursales = Sucursales::pluck('nombre','id');
-        $moneda = Moneda::find(1);
-        $familias_producto = FamiliaProducto::orderBy('nombre')->get();
-        return view('admin.productos.nuevo')->with(compact('productos', 'familias_producto', 'moneda','sucursales'));
+        $config = DB::table('configuraciones')
+        ->first();
+
+        $categorias = explode(",",$config->categorias);
+        $marcas = explode(",",$config->marcas);
+        $presentaciones = explode(",",$config->presentaciones);
+
+        $codigo = strtoupper(uniqid());
+       return view('admin.productos.nuevo',compact('codigo','categorias','marcas','presentaciones','config'));
     }
 
     public function guardar(Request $request){        
         
+         $extension = $request->poster->extension();
         //dd($request);
+        
         // validaciones
-        $this->validate($request, [                 
-            'codigo' => 'required',
-            'nombre' => 'required',
-        ]);
+          /*$validator = $request->validate([
+            'nombre'=>'required|max:250|unique:producto',
+            'descripcion'=>'required',
+            'marca'=>'required|max:100',
+            'categoria'=>'required|max:50',
+            'presentacion'=>'required|max:50',
+            'cantidad'=>'required|numeric',
+            'precio_venta'=>'required|max:20',
+            'poster'=>'required|max:5000',
+            'codigo'=>'required',
+            'estado'=>'required',
+        ]);*/
 
         $compra = $request->precio_compra;
         $venta  = $request->precio;
@@ -86,7 +105,7 @@ class ProductoController extends Controller
 
         $producto = Producto::BuscarPorCodigo($request->codigo)->count();
         $nombre   = Producto::BuscarPorNombre($request->nombre)->count();
-       // dd($nombre);
+        //dd($nombre, $producto);
        
         if ($nombre <> 0) {
              $notification = array(
@@ -102,86 +121,80 @@ class ProductoController extends Controller
                 return Redirect::to('productos/nuevo/')->with($notification);
         }else
 
-            //Acá se hace el alta
-            $producto = new Producto();
-            $producto->codigo  = $request->codigo;
-            $producto->marca_producto  = $request->marca_producto;
-            $producto->codigo_de_barras  = $request->codigo_de_barras;
-            $producto->nombre  = $request->nombre;
-            $producto->descripcion  = nl2br($request->descripcion);
-            $producto->fecha_fabricacion  = $request->fecha_fabricacion;
-            $producto->fecha_vencimiento  = $request->fecha_vencimiento;
-            $producto->sucursal_id  = $request->sucursal_id;
-            $producto->tasa_iva_id  = $request->tasa_iva_id;
+           try {
             
-            if($request->hasfile('photo')){
-            $imagen         = $request->file('photo');
-            $nombreimagen   = Str::slug($request->nombre).".".$imagen->guessExtension();
-            $ruta          = public_path("images/productos/");
-            $imagen->move($ruta,$nombreimagen);         
-            $producto->photo  = $nombreimagen; // asignar el nombre para guardar
+            $extension = $request->poster->extension();
+           
+            if($extension == 'png' || $extension == 'jpeg' || $extension == 'jpg' || $extension == 'webp'){
+                $producto = new Producto;
+                $producto->nombre = $request->get('nombre');
+                $producto->descripcion = $request->get('descripcion');
+                $producto->marca = $request->get('marca');
+                $producto->categoria = $request->get('categoria');
+                $producto->presentacion = $request->get('presentacion');
+                $producto->estado = $request->get('estado');
+                $producto->codigo = $request->get('codigo');
+                $producto->cantidad = $request->get('cantidad');
+                $producto->fecha_fabricacion = $request->get('fecha_fabricacion');
+                $producto->fecha_vencimiento = $request->get('fecha_vencimiento');
+                $producto->created_at = new DateTime();
+                $producto->save();
 
-            }
+
+               if ($producto != null) {
+                    $gananciaPorCompraVenta =  ($producto->precio -  $producto->precio_compra);
+                    $gananciaporproducto    = $gananciaPorCompraVenta * $request->stock;
+
+                    $ganancia = new Ganancia();
+                    $ganancia->producto_id = $producto->id;
+                    $ganancia->cantidad    = $producto->cantidad;
+                    $ganancia->ganancia_por_producto = $gananciaPorCompraVenta;
+                    $ganancia->total = $gananciaporproducto;
+                    $ganancia->save();
+
+                    $precio = new PrecioProducto();
+                    $precio->idproducto = $producto->id;
+                    $precio->precio_compra = $request->precio_compra;
+                    $precio->precio_venta = $request->precio_venta;
+
+                    $precio->save();
+
+                    $imagen = new ImagenProducto();
+                    $imagen->idproducto = $producto->id;
+                    $imgname = uniqid();
+                    $imageName = $imgname.'.'.$request->poster->extension(); 
+                     //dd($imageName);
+                    $request->poster->move(public_path('images/productos'), $imageName);
+                    $imagen->imagen = $imageName;
+
+                    $imagen->save();
 
 
-            if ($request->producto_garantia) {
+
+
+                    DB::table('producto_precio')->insert([
+                    'producto_id' => $producto->id,
+                    'usuario_id' => \Auth::user()->id,
+                    'fecha' => date("Y-m-d H:i:s"),
+                    'precio' => $precio->precio_venta
+                    ]);
+                    Session::flash('success', 'Se registró su producto con exito');
+                     return Redirect::back();  
+                    }
+
                 
-                $producto->producto_garantia  = $request->producto_garantia;
-                $producto->producto_tiempo_garantia  = $request->producto_tiempo_garantia;
             }else{
-
-                $producto->producto_garantia  = 0;
-                $producto->producto_tiempo_garantia  = 'Producto sin Garantía';
+          
+                Session::flash('danger', 'El formato de la imagen no se acepta');
+                return redirect()->back();
             }
 
-
-
-        if($request->precio!='' || $request->precio>0){
-            $producto->precio  = floatval(str_replace('.', '.', str_replace(',', '.', $request->precio)));
-            $producto->precio_compra  = floatval(str_replace('.', '.', str_replace(',', '.', $request->precio_compra)));
-
-            }else{
-                $producto->precio  = 0;
-            }
-
-            if($request->stock!='' || $request->stock>0){
-                $producto->stock  = $request->stock;
-            }else{
-                $producto->stock  = 0;
-            }
-            
-            
-
-            
-            $producto->save();
-
-            if ($producto != null) {
-            $gananciaPorCompraVenta =  ($producto->precio -  $producto->precio_compra);
-            $gananciaporproducto    = $gananciaPorCompraVenta * $request->stock;
-
-            $ganancia = new Ganancia();
-            $ganancia->producto_id = $producto->id;
-            $ganancia->cantidad    = $producto->stock;
-            $ganancia->ganancia_por_producto = $gananciaPorCompraVenta;
-            $ganancia->total = $gananciaporproducto;
-            $ganancia->save();
-
-
-
-            $producto->registrarCambioPrecio();
-            $notification = array(
-            'message' => 'Datos Ingresados!',
-            'alert-type' => 'success'
-             );
-            return Redirect::to('productos/nuevo/')->with($notification);   
-            }
-
-
-
-             
-                  
-                 
-        }          
+        } catch (\Exception $e) {
+            dd($e);
+            Session::flash('danger', 'Hubo un error al completar el formulario');
+            return redirect()->back();
+        }
+    }
          
     
 

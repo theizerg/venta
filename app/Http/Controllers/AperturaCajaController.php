@@ -2,11 +2,17 @@
  
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Redirect;
 use Illuminate\Http\Request;
-use App\Models\AperturaCaja;
+use DB;
+use Carbon\Carbon;
+use DateTime;
+use DateTimeZone;
+use Illuminate\Support\Facades\Validator;
+use Session;
+use Illuminate\Support\Facades\Redirect;
 use App\Models\User;
 use App\Models\Caja;
+use App\Models\Contabilidad;
 use App\Models\HistorialCajas;
 
 class AperturaCajaController extends Controller
@@ -33,25 +39,43 @@ class AperturaCajaController extends Controller
     }
 
 
-    public function index()
+      public function index(Request $request)
     {
         $usuario= \Auth::user()->id;
 
         $id = $this->usuario();
+
         
         if($id <> 1 ){
 
-            $aperturas = AperturaCaja::where('usuario_id',$usuario)->paginate(5);
-             return view('admin.apertura.index')->with([
-            'aperturas'=> $aperturas
-            ]);
+             $buscar = $request->get('buscar');
+
+        if(!$buscar){
+            $mytime = Carbon::now('America/Lima');
+            $buscar=$mytime->format('Y-m-d');
         }
 
-         $aperturas= AperturaCaja::paginate(5);
-             return view('admin.apertura.index')->with([
-            'aperturas'=> $aperturas
-            ]);
-       
+        $config = DB::table('configuraciones')->first();
+        $cajas = DB::table('cajas')
+        ->where('fecha','=',$buscar)
+        ->get();
+
+         return view('admin.apertura.index', compact('cajas','config'));
+        }
+
+          $buscar = $request->get('buscar');
+
+        if(!$buscar){
+            $mytime = Carbon::now('America/Lima');
+            $buscar=$mytime->format('Y-m-d');
+        }
+
+        $config = DB::table('configuraciones')->first();
+        $cajas = DB::table('cajas')
+        ->where('fecha','=',$buscar)
+        ->get();
+
+         return view('admin.apertura.index', compact('cajas','config'));
     }
 
     /**
@@ -61,8 +85,48 @@ class AperturaCajaController extends Controller
      */
     public function create()
     {
-        $cajas = Caja::all();
-        return view('admin.apertura.create')->with(compact('cajas'));
+        $deno = DB::table('denominacion')
+        ->orderby('id','desc')
+        ->get();
+
+        $caja = DB::table('cajas')
+        ->get();
+
+        $config = DB::table('configuraciones')->first();
+
+        $cajas = explode(",",$config->cajas);
+
+        
+        $mytime = Carbon::now('America/Caracas');
+        $fecha=$mytime->format('Y-m-d');
+
+         $today = getdate();
+        $data_month = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+        $config = \DB::table('configuraciones')->first();
+        $current_month = $today['mon'];
+        $current_year = $today['year'];
+        $mes_actual =$data_month[$current_month - 1];
+        //dd($mes_actual);
+
+        $nombre_dia = date('w');
+        switch($nombre_dia)
+        {
+            case 1: $nombre_dia="Lunes";
+            break;
+            case 2: $nombre_dia="Martes";
+            break;
+            case 3: $nombre_dia="Miercoles";
+            break;
+            case 4: $nombre_dia="Jueves";
+            break;
+            case 5: $nombre_dia="Viernes";
+            break;
+            case 6: $nombre_dia="Sabado";
+            break;
+        }
+        //dd($nombre_dia);
+
+        return view('admin.apertura.create',compact('deno','caja','config','fecha','cajas','mes_actual','nombre_dia'));
     }
 
     /** 
@@ -73,33 +137,82 @@ class AperturaCajaController extends Controller
      */
     public function store(Request $request)
     {
-        //dd($request);
+       // dd($request);
         
-        $apertura = AperturaCaja::create($request->all());
+         try {
 
-        $bolivares     = $request->nu_cantidad_efectivo;
-        $dolares       = $request->nu_cantidad_dolares;
-        $transferencia = $request->nu_cantidad_pago_movil;
-        $pago          = $request->nu_cantidad_transferencias;
-        $punto         = $request->nu_cantidad_punto_venta;
+            /*OBTENER DATOS DE LA CAJA */
+            $cantidades = $request->get('cantidad');
+            $denominacion = $request->get('denominacion');
+            $valor = $request->get('valor');
 
-        $historial = new HistorialCajas();
+            $deno = $request->get('deno');
+            $cont = 0;
 
-        $historial->descripcion = 'El vendedor '. \Auth::user()->name.' ha aperturado la caja N°'.$request->caja_id.' con: '.$bolivares.'Bss en efectivo, '.$punto.'Bss por pagos por punto de venta, '.$pago.'Bss por ventas realizadas por pago movil como medio de pago, '.$transferencia.'Bss por pagos recibidos por transferencias, y con '.$dolares.'$ en efectivo.';
+            /*OBTENER LA FECHA */
+            $mytime = Carbon::now('America/Lima');
+            $fecha=$mytime->format('Y-m-d');
 
-        $historial->usuario_id = $request->usuario_id;
-        $historial->caja_id = $request->caja_id;
-        $historial->fecha =  date("d-m-Y H:i:s");
+            /**OBTENER MES */
+            $today = getdate();
 
-        $historial->save();
+            $valid_caja = DB::table('cajas')
+            ->where([
+                ['caja','=',$request->get('caja')],
+                ['fecha','=',$fecha]
+            ])
+            ->first();
 
-        $notification = array(
-            'message' => '¡Apertura de caja generada!',
-            'alert-type' => 'success'
-        );
-        
-        return \Redirect::to('/apertura')->with($notification);
-    }
+            if($valid_caja){
+                Session::flash('warning', 'Ya se aperturó una caja para ese cajero este día');
+                return redirect()->back();
+            };
+
+            /**Obtener hora local*/
+            $hora = new DateTime("now", new DateTimeZone('America/Lima'));
+
+            /*OBTENER FECHA*/
+
+            $codigo_caja = uniqid();
+
+            $caja = new Caja;
+            $caja->codigo = $codigo_caja;
+            $caja->fecha = $fecha;
+            $caja->hora = $hora->format('H:i:s');
+            $caja->idusers=auth()->user()->id;
+            $caja->monto = $request->get('monto');
+            $caja->caja = $request->get('caja');
+            $caja->estado = 'Abierta';
+            $caja->mes=$today['mon'];
+            $caja->monto_cierre = '0';
+            $caja->year = $today['year'];
+            $caja->save();
+
+            $user = User::findOrFail(auth()->user()->id);
+            $user->caja =$codigo_caja;
+            $user->update();
+
+            while($cont<count($cantidades)){
+                $contabilidad = new Contabilidad;
+                $contabilidad->denominacion = $denominacion[$cont];
+                $contabilidad->valor = $valor[$cont];
+                $contabilidad->cantidad = $cantidades[$cont];
+                $contabilidad->idcaja =$caja->id;
+                $contabilidad->modo = 'Apertura';
+                $contabilidad->save();
+
+                $cont = $cont+1;
+            }
+           
+
+            Session::flash('success', 'Se abrió la caja para el día hoy: '. $fecha .' - '. $hora->format('H:i:s'));
+            return Redirect::to('panel/contabilidad');
+        } catch (\Exception $e) {
+            dd($e);
+            Session::flash('danger', 'Hubo un error al completar el formulario');
+            return redirect()->back(); 
+       }
+   }
 
     /**
      * Display the specified resource.

@@ -13,7 +13,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-         \Schema::defaultStringLength(500);
+         \Schema::defaultStringLength(910);
        \Carbon\Carbon::setToStringFormat('d-m-Y h:i A');
     }
 

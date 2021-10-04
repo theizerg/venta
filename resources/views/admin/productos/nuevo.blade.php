@@ -2,6 +2,17 @@
 @section('title', 'Productos')
 @section('content')
 <div class="container">
+	
+  @if(Session::has('danger'))
+      <div class="col-lg-12">
+          <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert" style="color: #ffffff;background-color: #ed2b2b;">
+              {{Session::get('danger')}}
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+      </div>
+  @endif 
 	<div class="row">
 		<div class="col-md-12">
 			<div class="card card-line-primary">
@@ -28,213 +39,174 @@
 						</li>
 					</ul><br> 
 				
-					<div class="row">
-					<form role="form" action="{{ url('productos/nuevo') }}" method="POST" enctype="multipart/form-data" >
-						@csrf
-						<div class="col-sm-12">
-							<div class="row">
-								<div class="col-sm-4">
-										<div class="form-group">
-										<label for="txtCodigo" class="control-label  ">Código</label>
-										<input id="txtCodigo" type="text" class="form-control" name="codigo" placeholder="Código de producto"  value="{!! old('codigo') !!}" oninvalid="this.setCustomValidity('Debe ingresar un código para registrar el producto')" required oninput="setCustomValidity('')">
-									</div>
-								</div>
-								<div class="col-sm-4">
-									<div class="form-group">
-										<label for="txtNombre" class="control-label  ">Nombre</label>
-										<input id="txtNombre" type="text" class="form-control" name="nombre" placeholder="Nombre de producto" oninvalid="this.setCustomValidity('Debe ingresar un nombre de producto')"  required oninput="setCustomValidity('')">
-									</div>
-								</div>
-								<div class="col-sm-4">
-									<div class="form-group">
-										@php
-										$tipos = App\Models\TipoProducto::pluck('nombre','id')
-										@endphp
-			           <label class="mt-1">Tipo de producto</label>
-                  {!! Form::select('sucursal_id', $tipos, null,array('class' => 'form-control input-sm','placeholder'=>'Selecione la clase de producto','id'=>'sucursal_id')) !!} 
-                  </div>
-								</div>
-								<div class="col-sm-4">
-									<div class="form-group">
-										<label for="txtCodigoDeBarras" class="control-label  ">
-											Marca del producto
-										</label>
-										<input id="txtMarcaProducto" type="text" class="form-control" name="marca_producto" placeholder="Marca del producto"  value="{!! old('marca_producto') !!}"  >
-									</div>
-								</div>
-								<div class="col-sm-4">
-									<div class="form-group">
-										<label for="txtCodigoDeBarras" class="control-label  ">
-											Código de barras
-										</label>
-										<input id="txtCodigoDeBarras" type="text" class="form-control" name="codigo_de_barras" placeholder="Código de barras"  value="{!! old('codigo_de_barras') !!}"  >
-									</div>
-								</div>
-								<div class="col-sm-4">
-									<div class="form-group">
-										<label for="txtNombre" class="control-label   ">
-											Categoría del producto
-										
-										</label>
+					<div class="row">                
+            <form action="{{ url('productos/nuevo') }}" method="POST" enctype="multipart/form-data" autocomplete="off">
+                    {{ csrf_field() }}
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="row">
+                                <div class="col-lg-3 col-md-3">
+                                    <img src="{{asset('images/productos/default.jpg')}}" id="blah" style="width:100%">
+                                    <input type="file" id="imgInp" name="poster" class="form-control mt-4">
+                                    @error ('poster')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $errors->first('poster') }}</strong>
+                                        </span>
+                                    @enderror
+                                    <center><button type="submit" class="btn btn-download mt-4" style="background-color: #69e781;">Registrar</button></center>
+                                </div>
+                                <div class="col-lg-9 col-md-9  form-group">
+                                    <div class="row">
+                                        <div class="col-lg-12 form-group">
+                                            <label><b>Título del producto</b></label>
+                                            <input type="text" name="nombre" class="form-control" value="{{old('nombre')}}" placeholder="Nombre del producto">
+                                            @error('nombre')
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                            @enderror
+                                        </div>
+                                    
+                                        <div class="col-lg-4 form-group">
+                                            <label><b>Categoría</b></label>
+                                            <select class="form-control" searchable="buscar.." name="categoria">
+                                                <option value="SELECCIONAR" selected disabled>SELECCIONAR</option>
+                                                @foreach ($categorias as $item)
+                                                    <option value="{{$item}}">{{$item}}</option>
+                                                @endforeach
+                                            </select>
+                                           @error('categoria')
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                            @enderror
+                                        </div>
+                                        <div class="col-lg-4 form-group">
+                                            <label><b>Marca</b></label>
+                                            <select class="form-control" searchable="buscar.." name="marca">
+                                                <option value="SELECCIONAR" selected disabled>SELECCIONAR</option>
+                                                @foreach ($marcas as $item)
+                                                    <option value="{{$item}}">{{$item}}</option>
+                                                @endforeach
+                                            </select>
+                                            @error('marca')
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                            @enderror
+                                        </div>
+                                        <div class="col-lg-4 form-group">
+                                            <label><b>Precio de compra</b></label>
+                                            <input type="text" name="precio_compra" class="form-control" value="{{old('precio_compra')}}" id="currency-field" pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$"  data-type="currency" placeholder="$0">
+                                           @error('precio_compra')
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                            @enderror
+                                        </div>
+                                        <div class="col-lg-4 form-group">
+                                            <label><b>Precio de venta</b></label>
+                                            <input type="text" name="precio_venta" class="form-control" id="currency-field" pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$"  data-type="currency" placeholder="$0">
+                                            @error('precio_venta')
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                            @enderror
+                                        </div>
+                                        
+                                        <div class="col-lg-4 form-group">
+                                            <label><b>Código</b></label>  
+                                            <input type="text" name="codigo" class="form-control" value="{{$codigo}}">
+                                            @error('codigo')
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                            @enderror
+                                        </div>
+                                        <div class="col-lg-4 form-group">
+                                            <label><b>Cantidad</b></label>
+                                            
+                                            <div class="input-group">
+                                                <input type="number" name="cantidad" class="form-control" value="{{old('cantidad')}}" placeholder="Cantidad" min="0"> 
+                                                @error('cantidad')
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                                @enderror
 
-										<div class="input-group float-right">
-											<select id="selectFamiliaProducto" class="form-control " name="familia_producto" required="true">
-												<option value="" disabled selected hidden>Categoría</option>
-												@foreach( $familias_producto as $f)
-													<option value="{{ $f->id}}">{{ $f->nombre }}</option>
-												@endforeach
-											</select>
-											
-											<div class="input-group-btn">
-												<a href="#formFamiliaProducto" id="btnAgregarArticulo" class="btn btn-default" data-toggle="modal" data-target="#formFamiliaProducto" style="color:green">
-													<i class="fa fa-plus-square" aria-hidden="true"></i>
-												</a>
-											</div>
-										</div>
-									</div>
-								</div>
-								<div class="col-sm-4">
-										<div class="form-group">
-										<label >Imágen del producto</label>
-										<input class="form-control input-sm" type="file" name="photo" placeholder="Precio de compra">
-									</div>
-								</div>
-								<div class="col-sm-4">
-										<div class="form-group  ">
-										<label >Precio de compra</label>
-										<input class="form-control input-sm" type="text" name="precio_compra" placeholder="Precio de compra">
-									</div>
-								</div>
-								<div class="col-sm-4">
-										<div class="form-group">
-										<label for="txtPrecio" class="control-label  ">Precio de venta</label>
-										<input id="txtPrecio" class="form-control" name="precio" placeholder="Precio de venta en {{App\Models\Moneda::find(1)->simbolo }}">
-									</div>
-								</div>
-								<div class="col-sm-4">
-										<div class="form-group">										
-										<label for="txtStock" class="control-label  ">Cantidad inicial</label>
-										<input id="txtStock" type="text" class="form-control" name="stock" placeholder="Cantidad inicial del producto">
-									</div>
-								</div>
-								<div class="col-sm-4">
-									<div class="form-group">		
-			           <label class="mt-1">Sucursal</label>
-                  {!! Form::select('sucursal_id', $sucursales, null,array('class' => 'form-control input-sm','placeholder'=>'Selecione la sucursal','id'=>'sucursal_id')) !!} 
-                  </div>
-								</div>
-								<div class="col-sm-4">
-									 <div class="form-group">
-                  	<label class="mt-1">¿Producto con garantia?</label>
-											<select id="producto_garantia" class="form-control " name="producto_garantia" required="true">
-												<option value="" disabled selected hidden>Seleccione</option>
-												<option value="1" >Sí</option>
-												<option value="0" >No</option>
-											
-											</select>
-											<div class="form-group">										
-										<label for="producto_tiempo_garantia" class="control-label producto_tiempo_garantia  ">Tiempo de garantía</label>
-										<input id="txtStock" type="text" class="form-control producto_tiempo_garantia" name="producto_tiempo_garantia" placeholder="Stock inicial del producto" value="3 meses">
-									</div>
-										
-										</div>
-								</div>
-								<div class="col-sm-4">
-										<div class="form-group" style="">
-										<label for="txtDescripcion" class="control-label  ">Fecha de fabricación</label>
-										<input id="txtCodigo" type="date" class="form-control" name="fecha_fabricacion" placeholder="Código de producto"  value="{!! old('codigo') !!}" oninvalid="this.setCustomValidity('Debe ingresar un código para registrar el producto')" required oninput="setCustomValidity('')">
-									</div>	
-								</div>
-								<div class="col-sm-4">
-										<div class="form-group" style="">
-										<label for="txtDescripcion" class="control-label  ">Fecha de vencimiento</label>
-										<input id="txtCodigo" type="date" class="form-control" name="fecha_vencimiento" placeholder="Código de producto"  value="{!! old('codigo') !!}" oninvalid="this.setCustomValidity('Debe ingresar un código para registrar el producto')" required oninput="setCustomValidity('')">
-									</div>	
-								</div>
-								<div class="col-sm-4">
-										<div class="form-group" style="">
-										<label for="txtDescripcion" class="control-label  ">N° de lote</label>
-										<input id="txtCodigo" type="text" class="form-control" name="lote" placeholder="Código de producto"  value="{!! old('codigo') !!}" oninvalid="this.setCustomValidity('Debe ingresar un código para registrar el producto')" required oninput="setCustomValidity('')">
-									</div>	
-								</div>
-									<div class="col-sm-6">
-										<div class="form-group" style="">
-										@php
-										$tipos = App\Models\TasaIva::get()
-										@endphp
-			           <label class="mt-1">Impuesto del producto</label>
-                 <select id="selectFamiliaProducto" class="form-control " name="tasa_iva_id" required="true">
-												<option value="" disabled selected hidden>Tasa de impuestos</option>
-												@foreach( $tipos as $f)
-													<option value="{{ $f->id}}">{{ $f->nombre }} ({{ $f->tasa }}%)</option>
-												@endforeach
-											</select>
-									</div>	
-								</div>
-								<div class="col-sm-6">
-										<div class="form-group" style="">
-										<label for="txtDescripcion" class="control-label  ">Descripción</label>
-										<textarea class="form-control" id="txtDescripcion" rows="3" placeholder="Descripción del producto" name="descripcion"></textarea>
-									</div>	
-								</div>
-								
-									<div class="col-sm-12">
-									  <button type="submit" class="btn blue darken-4 form-control" 
-									   id="boton">
-										  <i class="fas fa-save text-white" id="ajax-icon"></i>
-										   <span class="text-white ml-3">{{ __('Guardar') }}</span>
-									  </button>
-									</div>
-									{!! Form::close()!!}
-								  </div>
-								 <div class="col-md-12 ">
-								<legend>Últimos productos registrados</legend>
-								<div class="table-responsive">
-									<table class="table table-bordered table-hover display">
-                <thead>
-                <tr>
-                   <th>#</th>
-								   <th class="text-center">Código</th>
-								   <th class="text-center">Nombre</th>
-								   <th class="text-center">Categoría</th>
-								   <th class="text-center">Precio ($)</th>
-				                                  
-                </tr>
-              </thead>
-                @foreach ($productos as $p)
-                <tr>
-                  <td><img height="100" src="{{ url('images/productos',$p->photo) }}"> </td>
-                  <td><a href="/productos/detalle/{{ $p->codigo}}">{{ $p->codigo}}</a></td>
-                  <td>
-                  	@if(strlen($p->nombre) > 24)
-				           		{{ substr($p->nombre, 0, 24) . "..."}}
-									@else
-										{{ $p->nombre }}
-									@endif
-				                  </td>
-				                  <td class="text-center">{{ $p->familia->nombre}}</td>
-				                  <td>
-									&nbsp;
-									
-									<span class="text-center">
-										{{App\Models\Moneda::find(2)->simbolo }}
-										{{ $p->precio}}
-									</span>
-								</td>
-                </tr>
-                @endforeach
-              </table>
-									
-								</div>
-							</div>
-							</div>
-						</div>
-							
-
-		
-							
-							@include('partials.familia_producto_box')
-						</div>
+                                                <div class="input-group-addon">
+                                                <select name="presentacion" class="form-control">
+                                                        @foreach ($presentaciones as $item)
+                                                            <option value="{{$item}}">{{strtolower($item)}}</option>
+                                                        @endforeach
+                                                </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @php
+                                        $sucursales = App\Models\Sucursales::get()
+                                        @endphp
+                                        <div class="col-lg-6 form-group">
+                                            <label><b>Estado</b></label>
+                                            <select class="form-control" name="estado">
+                                                <option value="SELECCIONAR" selected disabled>SELECCIONAR</option>
+                                                <option value="Disponible">Disponible</option>
+                                                <option value="En espera">En espera</option>
+                                            </select>
+                                             @error('estado')
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                            @enderror
+                                        </div>
+                                        <div class="col-lg-6 form-group">
+                                            <label><b>Sucursal</b></label>
+                                            <select class="form-control" name="estado">
+                                                <option value="SELECCIONAR" selected disabled>SELECCIONAR</option>
+                                               <?php foreach ($sucursales as $key => $value): ?>
+                                               	 <option value="{{$value->id}}">{{$value->nombre}}</option>
+                                               <?php endforeach ?>
+                                            </select>
+                                            @error('sucursal_id')
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                            @enderror
+                                        </div>
+                                         <div class="col-lg-6 form-group">
+                                            <label><b>Fecha de fabricación</b></label>
+                                            <input type="date" name="fecha_fabricacion" class="form-control" value="{{old('fecha_fabricacion')}}">
+                                             @error('fecha_fabricacion')
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                            @enderror
+                                        </div>
+                                        <div class="col-lg-6 form-group">
+                                            <label><b>Fecha de vencimiento</b></label>
+                                            <input type="date" name="fecha_vencimiento" class="form-control" value="{{old('fecha_vencimiento')}}">
+                                             @error('fecha_vencimiento')
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                            @enderror
+                                        </div>
+                                        <div class="col-lg-12 form-group">
+                                            <label><b>Descripción</b></label>
+                                            <textarea name="descripcion" class="form-control" placeholder="Breve descripción del producto" style="height:150px">{{old('descripcion')}}</textarea>
+                                             @error('descripcion')
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
 					</div>                        
 				</div>
 			</div>
@@ -243,171 +215,109 @@
 @endsection
 
 @push('scripts')
-<script type="text/javascript">	
-	//Auto focus al buscador
-	$("#txtCodigo").focus();
-	$("#form_nuevo_producto").on('submit', function(e){		
-		var precio = $("#txtPrecio").val();
-		precio = precio.replace(",", ".");		
-		if(isNaN(precio)) {			
-			e.preventDefault();
-			alert("El precio ingresado no es válido.");
-		}
-	});
-
-	$("#formFamiliaProducto").on('submit', function(e){
-		e.preventDefault();		
-		var familiaProducto = $('#txtnombreFamiliaProducto').val();
-		$.ajax({
-			headers: {
-				'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-			},
-			type: "POST",
-			url: '/productos/familiaProductos/nueva',
-			data: {nombreFamiliaProducto: familiaProducto},            
-			success: function( response ) {				
-				$('#selectFamiliaProducto').append($('<option>', {
-					value: response,
-					text: familiaProducto,
-					selected: true
-				}));
-				$('#formFamiliaProducto').modal('toggle');
-			}
-		});
-	});
-</script>
 <script>
-    
-$(document).ready(function (){
+        window.onload = function(){
+           var loader = document.getElementById('loader');
+           var contenido = document.getElementById('contenido');
 
- //Define la cantidad de numeros aleatorios.
-var cantidadNumeros = 8;
-var myArray = []
-while(myArray.length < cantidadNumeros ){
-  var numeroAleatorio = Math.ceil(Math.random()*cantidadNumeros);
-  var existe = false;
-  for(var i=0;i<myArray.length;i++){
-    if(myArray [i] == numeroAleatorio){
-        existe = true;
-        break;
-    }
-  }
-  if(!existe){
-    myArray[myArray.length] = numeroAleatorio;
-  }
+            contenido.style.display = 'block';
+ 
+            $('#loader').remove();
+       }
 
-}
-$('#txtCodigo').val(myArray.join("") +'-'+'2' );
-  });
-</script>
-<script>
-    
-$(document).ready(function (){
-   
-    //Define la cantidad de numeros aleatorios.
-var cantidadNumeros = 12;
-var myArray = []
-while(myArray.length < cantidadNumeros ){
-  var numeroAleatorio = Math.ceil(Math.random()*cantidadNumeros);
-  var existe = false;
-  for(var i=0;i<myArray.length;i++){
-    if(myArray [i] == numeroAleatorio){
-        existe = true;
-        break;
-    }
-  }
-  if(!existe){
-    myArray[myArray.length] = numeroAleatorio;
-  }
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                
+                reader.onload = function(e) {
+                $('#blah').attr('src', e.target.result);
+                }
+                
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
 
-}
-$('#txtCodigoDeBarras').val(myArray.join(""));
-  });
-</script>
+        $("#imgInp").change(function() {
+            readURL(this);
+        });
 
 
+        $("input[data-type='currency']").on({
+            keyup: function() {
+            formatCurrency($(this));
+            },
+            blur: function() { 
+            formatCurrency($(this), "blur");
+            }
+        });
 
-<script>
-	$('.select2bs4').select2();
 
-</script>
-<script>
-	$('#quickForm').validate({
-    rules: {
-      nombre: {
-        required: true,
-        
-      },
-       descripcion: {
-        required: true,
-        
-      },
-      codigo_de_barras: {
-        required: true,
-        number: true,
-        minlength: 5
-      },
-      precio_compra: {
-        required: true
-      },
-      precio: {
-        required: true
-      },
-      stock: {
-        required: true
-      },
-    },
-    messages: {
-      nombre: {
-        required: "Ingresa el nombre del producto"
-        
-      },
-      stock: {
-        required: "Ingresa la cantidad disponible del producto"
-        
-      },
-      descripcion:{
-    		 required: "Ingresa la descripción del producto"
-    	},
-    	precio: {
-        required: "Ingresa el precio del producto"
-        
-      },
-      codigo_de_barras: {
-        required: "Please provide a password",
-        number: "Es un campo numérico",
-        minlength: "Your password must be at least 5 characters long"
-      },
-      precio_compra: "Ingresa el precio de compra"
-    },
-    errorElement: 'span',
-    errorPlacement: function (error, element) {
-      error.addClass('invalid-feedback');
-      element.closest('.form-group').append(error);
-    },
-    highlight: function (element, errorClass, validClass) {
-      $(element).addClass('is-invalid');
-    },
-    unhighlight: function (element, errorClass, validClass) {
-      $(element).removeClass('is-invalid');
-    }
-  });
-</script>
-<script type="text/javascript">
+        function formatNumber(n) {
+        return n.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+        }
 
-		$(document).ready(function(){
-			$(".producto_tiempo_garantia").hide();
-			$("#producto_garantia").on('change', function(){
-				if($("#producto_garantia").val() == 1){
-	
-					$(".producto_tiempo_garantia").show();
-				
 
-				}else {
+        function formatCurrency(input, blur) {
+            var input_val = input.val();
+            
+            // don't validate empty input
+            if (input_val === "") { return; }
+            
+            // original length
+            var original_len = input_val.length;
 
-					$(".producto_tiempo_garantia").hide();
-				}
-			});
-		});
-	</script>
+            // initial caret position 
+            var caret_pos = input.prop("selectionStart");
+                
+            // check for decimal
+            if (input_val.indexOf(".") >= 0) {
+
+                // get position of first decimal
+                // this prevents multiple decimals from
+                // being entered
+                var decimal_pos = input_val.indexOf(".");
+
+                // split number by decimal point
+                var left_side = input_val.substring(0, decimal_pos);
+                var right_side = input_val.substring(decimal_pos);
+
+                // add commas to left side of number
+                left_side = formatNumber(left_side);
+
+                // validate right side
+                right_side = formatNumber(right_side);
+                
+                // On blur make sure 2 numbers after decimal
+                if (blur === "blur") {
+                right_side += "00";
+                }
+                
+                // Limit decimal to only 2 digits
+                right_side = right_side.substring(0, 2);
+
+                // join number by .
+                input_val = "<?php echo $config->prefijo_moneda?>" + left_side + "." + right_side;
+
+            } else {
+                // no decimal entered
+                // add commas to number
+                // remove all non-digits
+                input_val = formatNumber(input_val);
+                input_val = "<?php echo $config->prefijo_moneda?>" + input_val;
+                
+                // final formatting
+                if (blur === "blur") {
+                input_val += ".00";
+                }
+            }
+            
+            // send updated string to input
+            input.val(input_val);
+
+            var updated_len = input_val.length;
+            caret_pos = updated_len - original_len + caret_pos;
+            input[0].setSelectionRange(caret_pos, caret_pos);
+        }
+
+    </script>
 @endpush

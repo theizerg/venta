@@ -19,20 +19,14 @@
               <h3 class="card-title ">Listado de productos</h3>
           </div>
             <div class="card-body table-responsive table-striped">
-               <ul class="list-inline">
-                 <li class="list-inline-item">
-                    <a href="/" class="link_ruta">
-                      Inicio &nbsp; &nbsp;<i class="fa fa-chevron-right" aria-hidden="true"></i>
-                    </a>
-                  </li>
-                </ul><br>
+              
               <table class="table table-bordered table-hover display" id="example1">
                 <thead>
                 <tr>
                    <th>#</th>
         				   <th class="text-center">Código</th>
-        				   <th class="text-center">Nombre del producto</th>
-                   <th class="text-center">Marca del producto</th>
+        				   <th class="text-center">Producto</th>
+                   <th class="text-center">Marca</th>
         				   <th class="text-center">Categoría</th>
         				   <th class="text-center">Precio</th>
         				   <th class="text-center">Cantidad disponible</th>
@@ -43,29 +37,29 @@
               </thead>
               @foreach ($productos as $p)
               <tr>
-               <td><img height="100" src="{{ url('images/productos',$p->photo) }}"> </td>
+               <td><img height="50" src="{{ url('images/productos',$p->imagenes->imagen) }}"> </td>
                <td><a href="/productos/detalle/{{ $p->codigo}}">{{ $p->codigo}}</a></td>
                 <td>
                 {{ $p->nombre }}
                 </td>
                  <td>
-                  @if(strlen($p->marca_producto) > 24)
-                    {{ substr($p->marca_producto, 0, 24) . "..."}}
+                  @if(strlen($p->marca) > 24)
+                    {{ substr($p->marca, 0, 24) . "..."}}
                   @else
-                    {{ $p->marca_producto }}
+                    {{ $p->marca }}
                   @endif
                 </td>
 
-                <td class="text-center">{{ $p->familia->nombre}}</td>
+                <td class="text-center">{{ $p->categoria}}</td>
                 <td>
-				&nbsp;
+			    	&nbsp;
 				
 				<span class="text-center">
-					{{ App\Models\Moneda::find(2)->simbolo }}
-					 {{$p->precio}}
+				
+					 {{$p->precio->precio_venta}}
 				</span>
 			</td>
-			  <td class="text-center">{{ $p->stock}}</td>
+			  <td class="text-center">{{ $p->cantidad}}</td>
         @can('EditaProducto')
 			    <td class="text-center">
     						<a href="#formStock" id="{{$p->codigo}}" data-toggle="modal" data-target="#formStock" onclick='$("#form_stock").attr("action", "/productos/{{$p->codigo}}/ModificarStock");'>

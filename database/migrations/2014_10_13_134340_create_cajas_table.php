@@ -15,8 +15,18 @@ class CreateCajasTable extends Migration
     {
         Schema::create('cajas', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('nu_caja');
-            $table->smallInteger('status'); // 1 Activa 0 Inactiva
+            $table->string('codigo');
+            $table->string('fecha');
+            $table->string('hora_cierre')->nullable();
+            $table->string('hora');
+            $table->string('mes');
+            $table->string('year');
+            $table->integer('idusers')->unsigned();
+            $table->foreign('idusers')->references('id')->on('users');
+            $table->string('monto');
+            $table->string('monto_cierre');
+            $table->string('estado');
+            $table->string('caja');
             $table->softDeletes();
             $table->timestamps();
         });

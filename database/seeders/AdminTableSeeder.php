@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use  App\Models\Caja;
+use  App\Models\Configuraciones;
 class AdminTableSeeder extends Seeder
 {
     /**
@@ -15,10 +16,50 @@ class AdminTableSeeder extends Seeder
     {
         
        
-    	$user = new Caja;
-        $user->nu_caja = 1;
-        $user->status = 0;
-        $user->save();
+    	
+        \DB::table('denominacion')->insert([
+            'denominacion' => 'Moneda de 50 centimos',
+            'valor' => '0.50'
+            
+        ]);
+
+         \DB::table('denominacion')->insert([
+            'denominacion' => 'Moneda de 1 USD',
+            'valor' => '1.00'
+            
+        ]);
+
+         \DB::table('denominacion')->insert([
+            'denominacion' => 'Billete de 5 USD',
+            'valor' => '5.00'
+            
+        ]);
+
+
+        \DB::table('denominacion')->insert([
+            'denominacion' => 'Billete de 10 USD',
+            'valor' => '10.00'
+            
+        ]);
+
+
+         \DB::table('denominacion')->insert([
+            'denominacion' => 'Billete de 20 USD',
+            'valor' => '20.00'
+            
+        ]);
+
+        \DB::table('denominacion')->insert([
+            'denominacion' => 'Billete de 50 USD',
+            'valor' => '50.00'
+            
+        ]);
+
+        \DB::table('denominacion')->insert([
+            'denominacion' => 'Billete de 100 USD',
+            'valor' => '100.00'
+            
+        ]);
 
 
 		\DB::table('tipo_compra')->insert([
@@ -186,7 +227,68 @@ class AdminTableSeeder extends Seeder
             'nombre' => 'Productos de almacén',
         ]);
 
+
+          $configuracion = new Configuraciones;
+         $configuracion->titulo = 'Pretech Systems';
+         $configuracion->logo = 'logo.png';
+         $configuracion->marcas = 'Xiaomi,
+                                  Samsung,
+                                  Sonny,
+                                  JBL,
+                                  HP,
+                                  Acer,
+                                  Caterpillar,
+                                  LG,
+                                  Huawei,
+                                  Itachi,
+                                  Pan,
+                                  Mary';
+
+        $configuracion->categorias =  'Smartphones,
+                                        Smartwatch,
+                                        Tablets,
+                                        Laptops, 
+                                        Audifonos, 
+                                        TVs,
+                                        Impresoras,
+                                        Zapatos,
+                                        Coser,
+                                        Ropa,
+                                        Alimentos';
+
+
+         $configuracion->presentaciones = 'unid, caja,  packete, kg, ltrs';
+
+         $configuracion->denomicaciones = 'Moneda de 50 centimos, Moneda de 1 USD, Moneda de 2 USD, Moneda de 5 USD, Billete de 10 USD, Billete de 20 USD, Billete de 50 USD, Billete de 100 USD';
+
+         $configuracion->currency = 'USD';
+         $configuracion->tipo_moneda = 'Dolar';  
+         $configuracion->prefijo_moneda = '$'; 
+         $configuracion->cajas = 'Caja 1, Caja 2, Caja 3, Caja 4, Caja 5';  
+         $configuracion->serie = '001';
+         $configuracion->correlativo = '0000001';
+         $configuracion->igv = '16.00';
+         $configuracion->email = 'theizerg@gmail.com';
+
+         $configuracion->save();
+
+
+
+
+
+
+
+
+
+
     /*
+
+		
+
+
+
+
+
         \DB::table('productos')->insert([
 				'marca_producto' =>'obtener',
 				'codigo' => '295875726-9',
